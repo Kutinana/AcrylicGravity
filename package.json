@@ -1,0 +1,14 @@
+{
+  "name": "acrylicgravity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Acrylic theme and wallpaper controls for Antigravity on Windows",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "build": "node build_bootstrap.js",
+    "build:app": "node scripts/prepare-app.js",
+    "sync": "node build_bootstrap.js --sync",
+    "start": "node daemon.js"
+  },
+  "dependencies": { "@electron/asar": "4.3.1" }
+}

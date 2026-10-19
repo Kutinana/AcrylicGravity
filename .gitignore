@@ -1,0 +1,68 @@
+# ==============================================================================
+# AcrylicGravity - Git Ignore Configuration
+# ==============================================================================
+
+# Operating System files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Logs & Runtime Process IDs
+*.log
+daemon.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.seed
+*.pid.lock
+DevToolsActivePort
+
+# Temporary, Cache & Backup files
+.cache/
+temp/
+tmp/
+*.tmp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment & Local secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies and locally generated client packages
+node_modules/
+build/
+dist/
+bootstrap.js
+asar-extracted/
+*.asar
+*.asar.*
+
+# Personal wallpaper and its generated offline cache
+assets/*
+!assets/.gitkeep

@@ -1,0 +1,1570 @@
+/* ==========================================================================
+   Antigravity Theme Patch: 優しい音色 & 亚克力高通透层次美化
+   ========================================================================== */
+
+/* 应用外层固定在视口内；滚动仍由正文、侧栏和编辑器各自处理。 */
+html, body {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+* {
+  scrollbar-width: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+[data-testid="overlay-scrollbar"],
+.monaco-scrollable-element > .scrollbar {
+  display: none !important;
+}
+
+:root {
+  --ag-pane-duration: 380ms;
+  --ag-pane-ease: cubic-bezier(0.22, 0.8, 0.25, 1.04);
+  --ag-text-strong: #FFFFFF;
+  --ag-text: #ECEAE4;
+  --ag-text-secondary: #DCDAD2;
+  --ag-text-muted: #AAB0BB;
+  --ag-placeholder: #939CA9;
+  --ag-text-rgb: 236, 234, 228;
+  --ag-ink-rgb: 255, 255, 255;
+  --ag-surface-rgb: 16, 20, 30;
+  --ag-sidebar-rgb: 16, 18, 25;
+  --ag-sidebar-opacity: 0.72;
+  --ag-panel-rgb: 28, 33, 46;
+  --ag-shadow-rgb: 0 0 0;
+  --ag-shadow-strength: 1;
+  --ag-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  --ag-highlight: #FFE082;
+  --ag-accent: #79B8FF;
+  --ag-bg-brightness: 0.88;
+  --ag-backdrop: rgba(0, 0, 0, 0.25);
+  --ag-reading-opacity: 0;
+  --ag-reading-rgb: 16, 20, 30;
+  --ag-main-fade-height: 96px;
+}
+
+body:is(.theme-light, .light) {
+  --ag-text-strong: #17202D;
+  --ag-text: #253041;
+  --ag-text-secondary: #2F3B4C;
+  --ag-text-muted: #3B4656;
+  --ag-placeholder: #4D5969;
+  --ag-text-rgb: 37, 48, 65;
+  --ag-ink-rgb: 32, 43, 60;
+  --ag-surface-rgb: 255, 255, 255;
+  --ag-sidebar-rgb: 242, 246, 252;
+  --ag-sidebar-opacity: 0.58;
+  --ag-panel-rgb: 255, 255, 255;
+  --ag-shadow-rgb: 47 62 83;
+  --ag-shadow-strength: 0.24;
+  --ag-text-shadow: none;
+  --ag-highlight: #865B08;
+  --ag-accent: #2563EB;
+  --ag-bg-brightness: 1.04;
+  --ag-backdrop: rgba(35, 45, 65, 0.12);
+  --ag-reading-opacity: 0.70;
+  --ag-reading-rgb: 255, 255, 255;
+}
+
+/* Resolve native semantic colors at the body so theme changes also reach portals. */
+body {
+  --ag-chrome-tint: rgba(var(--ag-sidebar-rgb), var(--ag-sidebar-opacity));
+  --ag-reading-tint: rgba(var(--ag-reading-rgb), var(--ag-reading-opacity));
+  --sidebar: rgba(var(--ag-sidebar-rgb), var(--ag-sidebar-opacity)) !important;
+  --foreground: var(--ag-text-strong) !important;
+  --secondary-foreground: var(--ag-text-secondary) !important;
+  --muted-foreground: var(--ag-text-muted) !important;
+  --color-foreground: var(--ag-text-strong);
+  --color-secondary-foreground: var(--ag-text-secondary);
+  --color-muted-foreground: var(--ag-text-muted);
+  --color-placeholder: var(--ag-placeholder);
+  --color-secondary: rgba(var(--ag-ink-rgb), 0.06);
+  --color-muted: rgba(var(--ag-ink-rgb), 0.10);
+  --color-border: rgba(var(--ag-ink-rgb), 0.12);
+  --color-sidebar-secondary: rgba(var(--ag-ink-rgb), 0.12);
+  --color-sidebar-muted: rgba(var(--ag-ink-rgb), 0.06);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ag-accent);
+}
+
+/* 1. 全局透明度：让插画背景通透显现，消除生硬的背景色块与割裂感 */
+html, body, #root, .h-screen.w-screen,
+.bg-background:not(.settings-modal-container):not([role="dialog"]):not([role="alertdialog"]),
+div.bg-background:not(.settings-modal-container):not([role="dialog"]):not([role="alertdialog"]),
+div[style*="max-conversation-width"], .mx-auto.w-full[style*="max-conversation-width"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* A transparent reading tint reveals the theme canvas, not Electron's startup
+   window color, which can stay dark after an in-app theme switch. */
+html {
+  background: #131313 !important;
+}
+
+html:has(> body:is(.theme-light, .light)) {
+  background: #F9F9F9 !important;
+}
+
+/* 深色模式色彩体系 */
+body.theme-dark, body.dark {
+  --foreground: var(--ag-text-strong) !important;
+  --secondary-foreground: var(--ag-text-strong) !important;
+  --muted-foreground: var(--ag-text-muted) !important;
+
+  --sidebar: rgba(var(--ag-sidebar-rgb), 0.72) !important;
+  --sidebar-secondary: rgba(var(--ag-ink-rgb), 0.12) !important;
+  --sidebar-muted: rgba(var(--ag-ink-rgb), 0.06) !important;
+  --sidebar-border: rgba(var(--ag-ink-rgb), 0.12) !important;
+
+  --card: rgba(var(--ag-surface-rgb), 0.42) !important;
+  --card-border: rgba(var(--ag-ink-rgb), 0.16) !important;
+  --border: rgba(var(--ag-ink-rgb), 0.12) !important;
+  --muted: rgba(var(--ag-ink-rgb), 0.06) !important;
+}
+
+/* 2. 只移除顶部提问的装饰渐变；保留消息主体与原生 sticky 定位。 */
+.md-sticky-message-bleed::before,
+.md-sticky-message-bleed::after,
+.absolute.bottom-0.z-10.pointer-events-none {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  display: none !important;
+}
+
+.md-sticky-message-bleed {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 3. 【要点 1】对话执行框、底部输入框与 Overview 悬浮窗：大幅提高通透度 (0.42~0.48)，背景清晰可见 */
+/* 右侧 Overview 看板：通透度调高至 0.45 */
+.animate-overview-panel {
+  background-color: rgba(var(--ag-surface-rgb), 0.45) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgb(var(--ag-shadow-rgb) / calc(0.25 * var(--ag-shadow-strength))) !important;
+  transform-origin: top right !important;
+  transition: none !important;
+  animation: agOverviewEnter 300ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+/* keyframes 确保完全卸载后重开也有进入动画，不依赖起始属性恰好被绘制一帧。 */
+@keyframes agOverviewEnter {
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes agOverviewExit {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-8px) scale(0.96); }
+}
+
+.animate-overview-panel[data-ending-style] {
+  animation: agOverviewExit 220ms cubic-bezier(0.4, 0, 1, 1) both !important;
+  pointer-events: none !important;
+}
+
+/* Overview 在 gutter / sibling / overlay 之间切换时始终悬浮，不参与正文 flex 布局。 */
+[data-testid="overview-panel-host"] {
+  --overview-panel-reserve: 0px !important;
+  --overview-panel-gutter-reserve: 0px !important;
+}
+
+[data-testid="overview-panel-host"] > .animate-overview-panel {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  margin: 0 !important;
+}
+
+[data-testid="conversation-view"] {
+  padding-right: 0 !important;
+  transition: none !important;
+}
+
+/* 使用原生的最终分栏宽度确定列宽与终点，正文/输入框只做合成层位移。
+   33px = 两侧各 16px 留白 + 1px 分栏线；端点取整，避免静止文字落在半像素。
+   这样原生 ResizeObserver 的整页重算不会逐帧改变文字的排版和居中位置。 */
+[data-ag-motion-column] [data-testid="autoscroll-viewport"] > .mx-auto.w-full[style*="max-conversation-width"],
+[data-ag-motion-column] .animate-fade-in[style*="max-conversation-width"] {
+  width: min(max(30vw, var(--max-conversation-width, 48rem)), max(0px, calc(var(--settled-content-width) - 33px))) !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: flex-start !important;
+  translate: round(nearest, max(0px, calc((var(--settled-content-width) - 33px - max(30vw, var(--max-conversation-width, 48rem))) / 2)), 1px) 0;
+  transition: translate var(--ag-pane-duration) var(--ag-pane-ease), opacity 0.15s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ag-motion-column] [data-testid="autoscroll-viewport"] > .mx-auto.w-full[style*="max-conversation-width"],
+  [data-ag-motion-column] .animate-fade-in[style*="max-conversation-width"] {
+    transition: none !important;
+  }
+  .animate-overview-panel,
+  .animate-overview-panel[data-ending-style] {
+    animation: none !important;
+  }
+}
+
+/* 用户 Prompt：只有最外层卡片承担磨砂，内层不再叠加底色。 */
+[data-testid="user-input-step"] .bg-card-border {
+  background-color: rgba(var(--ag-surface-rgb), 0.45) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgb(var(--ag-shadow-rgb) / calc(0.25 * var(--ag-shadow-strength))) !important;
+}
+
+[data-testid="user-input-step"] .bg-card-border > .bg-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-testid="user-message"],
+.whitespace-pre-wrap {
+  color: var(--ag-text-strong) !important;
+  font-weight: 500 !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* 底部输入框：与 Overview 相同的单层 0.45 着色和 20px 磨砂。 */
+#antigravity\.agentSidePanelInputBox,
+[id*="agentSidePanelInputBox"] {
+  background-color: rgba(var(--ag-surface-rgb), 0.45) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgb(var(--ag-shadow-rgb) / calc(0.25 * var(--ag-shadow-strength))) !important;
+}
+
+[id*="agentSidePanelInputBox"] > .bg-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#antigravity\.agentSidePanelInputBox span,
+#antigravity\.agentSidePanelInputBox button,
+[id*="agentSidePanelInputBox"] span,
+[id*="agentSidePanelInputBox"] button {
+  opacity: 1 !important;
+  color: var(--ag-text-strong) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.012em !important;
+}
+
+/* 4. 最顶上菜单栏与窗口标题栏：消除上下白线，极度纯净清晰 */
+[data-testid="title-menu-bar"],
+[data-testid="title-menu-bar"] *,
+header,
+header * {
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+[data-testid="title-menu-bar"] {
+  background: rgba(var(--ag-surface-rgb), 0.80) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+[data-testid="title-menu-bar"] button,
+[data-testid="title-menu-bar"] span {
+  color: var(--ag-text) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-shadow: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-testid="title-menu-bar"] button:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.08) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* One L-shaped surface joins the menu, navigation and page toolbar. Hard stops
+   keep blurred wallpaper within the chrome; controls are never masked. */
+#ag-chrome-glass {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: rgba(var(--ag-sidebar-rgb), var(--ag-sidebar-opacity));
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  mask-image:
+    linear-gradient(to bottom, #000 var(--ag-chrome-top), transparent var(--ag-chrome-top)),
+    linear-gradient(to right, rgba(0, 0, 0, var(--ag-chrome-sidebar-alpha)) var(--ag-chrome-left), transparent var(--ag-chrome-left));
+  mask-composite: add;
+}
+
+#root [data-ag-chrome-surface] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#root [data-ag-chrome-surface="toolbar"] {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+}
+
+#root [data-ag-chrome-surface="toolbar"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Blend color behind the text, never a second blurred image over the content.
+   The longer transition joins the shared chrome to the user's reading tint. */
+#root [data-ag-reading-surface] {
+  background: linear-gradient(to bottom,
+    var(--ag-chrome-tint) 0,
+    color-mix(in srgb, var(--ag-chrome-tint) 90%, var(--ag-reading-tint)) calc(var(--ag-main-fade-height) * 0.18),
+    color-mix(in srgb, var(--ag-chrome-tint) 65%, var(--ag-reading-tint)) calc(var(--ag-main-fade-height) * 0.42),
+    color-mix(in srgb, var(--ag-chrome-tint) 30%, var(--ag-reading-tint)) calc(var(--ag-main-fade-height) * 0.68),
+    color-mix(in srgb, var(--ag-chrome-tint) 8%, var(--ag-reading-tint)) calc(var(--ag-main-fade-height) * 0.86),
+    var(--ag-reading-tint) var(--ag-main-fade-height)) !important;
+}
+
+body:is(.theme-light, .light) [data-ag-library-page] .text-xs {
+  font-weight: 450;
+}
+
+/* 5. 【关键修正】会话折叠步骤与思考项：严禁加 Outline/Border，保持极简无边框 */
+button:has(> [class*="truncate"]),
+[data-testid="tool-group-collapsible"],
+[class*="thought"],
+[class*="step"],
+[data-testid="cascade-system-message-toolbar"] *,
+div[data-testid="autoscroll-viewport"] [data-testid*="step"] button,
+div[data-testid="autoscroll-viewport"] [role="button"],
+div[data-testid="autoscroll-viewport"] .text-muted-foreground,
+div[data-testid="autoscroll-viewport"] [class*="text-muted"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--ag-text) !important;
+  text-shadow: var(--ag-text-shadow) !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-weight: 520 !important;
+}
+
+[data-testid="tool-group-collapsible"] [class*="tabular-nums"],
+[class*="tabular-nums"] {
+  color: var(--ag-highlight) !important; /* 柔金时间高亮 */
+  font-weight: 600 !important;
+}
+
+button:has(> [class*="truncate"]):hover,
+[data-testid="tool-group-collapsible"]:hover,
+[data-testid="thinking-collapsible-trigger"]:hover,
+button[data-testid*="thinking"]:hover,
+div[data-testid="autoscroll-viewport"] button.hover\:bg-muted:hover,
+div[data-testid="autoscroll-viewport"] [role="button"]:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.08) !important;
+  border-radius: 6px !important;
+}
+
+/* 6. 【要点 2 纠正】仅对 Review、Plan 执行按钮与交互选项加 Outline 线框 */
+button.review-button,
+button[class*="review-button"],
+button[data-testid*="review"],
+[data-testid="interactive-dialog"] button,
+button[data-testid*="plan-execute"],
+button[data-testid*="proceed"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.28) !important;
+  border-radius: 6px !important;
+  color: var(--ag-text) !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+button.review-button:hover,
+button[class*="review-button"]:hover,
+[data-testid="interactive-dialog"] button:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.12) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.50) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* 7. 【消除多重割裂嵌套】代码块与命令执行卡片彻底扁平化统一 */
+
+/* 7.1 正文中的独立 Markdown 代码块 pre */
+[data-testid="conversation-view"] .select-text pre {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 8px 0 !important;
+}
+
+/* 原生代码卡片含标题栏和正文；只让这一层承担玻璃与边框。 */
+[data-testid="conversation-view"] .select-text pre > div:has(.code-block) {
+  background: rgba(var(--ag-surface-rgb), 0.50) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.14) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 20px rgb(var(--ag-shadow-rgb) / calc(0.25 * var(--ag-shadow-strength))) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* 7.2 工作记录与命令行：纯透明，不保留逐条的磨砂背景。 */
+div.group\/run-command,
+div[class*="group/run-command"],
+div[data-testid="run-command-step"],
+div[data-testid="run-command-step"] > div,
+div[data-testid*="run-command"] > div {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 命令卡片内的所有 pre、输入行与输出区完全透明、无边框、无圆角、无阴影，融为一体 */
+[data-testid="run-command-step"] pre,
+.group\/run-command pre,
+[class*="group/run-command"] pre,
+[data-testid*="step"] pre,
+div[data-testid="autoscroll-viewport"] [class*="step"] pre,
+[data-testid="run-command-step"] div:not(:first-child),
+.group\/run-command div,
+[class*="group/run-command"] div {
+  background-color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 终端输出与命令文字高对比度排版 */
+[data-testid="run-command-step"] pre,
+.group\/run-command pre,
+[class*="group/run-command"] pre {
+  color: var(--ag-text) !important;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace !important;
+  font-size: 13px !important;
+  text-shadow: var(--ag-text-shadow) !important;
+  padding: 8px 14px !important;
+}
+
+/* 命令输入行与输出区之间仅保留一条极淡的发丝分割线 */
+[data-testid="run-command-step"] pre:first-of-type,
+.group\/run-command pre:first-of-type {
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.08) !important;
+}
+
+/* 7.3 思考区与步骤折叠容器：解除局部限高与嵌套滚动截断，彻底杜绝因 Chromium 嵌套合成滚动层导致的子卡片 backdrop-filter 亚克力磨砂失效消失 */
+div.bleed-contain,
+div[class*="bleed-contain"],
+div:has(> [data-testid="run-command-step"]),
+div:has(> [data-testid="view-file-step"]),
+div:has(> [data-testid*="-step"]),
+[data-testid="tool-group-collapsible"] + div,
+[data-testid="worked-for-collapsible"] + div,
+[data-testid*="thinking"] + div {
+  overflow: visible !important;
+  overflow-y: visible !important;
+  max-height: none !important;
+  height: auto !important;
+}
+
+/* 行内代码 Snippet：微透磨砂微标签（非死黑块） */
+[role="article"] code:not(pre code),
+div[class*="select-text"] code:not(pre code),
+.prose :not(pre) > code {
+  background-color: rgba(var(--ag-ink-rgb), 0.08) !important;
+  color: var(--ag-highlight) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 5px !important;
+  padding: 1px 6px !important;
+  font-size: 0.9em !important;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* 文件链接胶囊 (Inline-pill) */
+.inline-pill,
+[class*="inline-pill"] {
+  background-color: rgba(var(--ag-ink-rgb), 0.06) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 6px !important;
+  color: var(--ag-text) !important;
+  box-shadow: none !important;
+}
+
+.inline-pill:hover,
+[class*="inline-pill"]:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.12) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.32) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* 文件变更摘要与按钮采用相同的提亮反馈。 */
+.files-changed-header {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.16) !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.files-changed-header:hover,
+.files-changed-header:focus-within {
+  background: rgba(var(--ag-ink-rgb), 0.08) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.28) !important;
+}
+
+.files-changed-header:active {
+  background: rgba(var(--ag-ink-rgb), 0.12) !important;
+}
+
+/* 8. 左侧边栏：向右投射轻微微弱的过渡微阴影 (微层深感，自然衔接) */
+aside,
+div.h-full.w-full.flex.flex-col.pb-2.bg-sidebar {
+  background-color: rgba(var(--ag-sidebar-rgb), var(--ag-sidebar-opacity)) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-right: 1px solid rgba(var(--ag-ink-rgb), 0.06) !important;
+  box-shadow: 2px 0 8px rgb(var(--ag-shadow-rgb) / calc(0.15 * var(--ag-shadow-strength))) !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.bg-sidebar [data-testid="section-header"],
+.bg-sidebar [class*="section-header"],
+.bg-sidebar [data-sidebar-section-drop-id],
+.bg-sidebar [class*="group/header"],
+.bg-sidebar [data-testid="project-header"],
+.bg-sidebar button[class*="headerbtn"],
+.bg-sidebar [class*="pt-1 pb-[1px]"],
+.bg-sidebar [data-project-card="true"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.bg-sidebar [data-testid="project-header"] svg,
+.bg-sidebar [data-testid="project-header"] div,
+.bg-sidebar [data-testid="section-header"] svg,
+.bg-sidebar [data-testid="section-header"] button {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.bg-sidebar [data-testid="project-header"]:hover,
+.bg-sidebar button[class*="headerbtn"]:hover,
+.bg-sidebar [class*="group/header"]:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.08) !important;
+  border-radius: 8px !important;
+  border: none !important;
+}
+
+.bg-sidebar [data-testid="section-header"] h2,
+.bg-sidebar [data-testid="section-header"] span,
+.bg-sidebar [data-testid="project-header"] span {
+  color: var(--ag-text-secondary) !important;
+  font-weight: 500 !important;
+  text-shadow: var(--ag-text-shadow) !important;
+  border: none !important;
+}
+
+.bg-sidebar a, .bg-sidebar button {
+  color: var(--ag-text-secondary) !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* 四个主导航入口共用基础与 hover 状态，New Conversation 额外保留描边。 */
+[role="navigation"] :is([data-testid="new-conversation-button"], [data-testid="history-button"], [data-testid="automations-button"], a[href="/customizations"]) {
+  background: transparent !important;
+  color: var(--ag-text-secondary) !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+}
+
+[role="navigation"] a[data-testid="new-conversation-button"] {
+  border-color: rgba(var(--ag-ink-rgb), 0.16) !important;
+}
+
+[role="navigation"] :is([data-testid="new-conversation-button"], [data-testid="history-button"], [data-testid="automations-button"], a[href="/customizations"]):is(:hover, :focus-visible) {
+  background: rgba(var(--ag-ink-rgb), 0.08) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* 会话操作区只保留按钮自己的 hover，去掉父容器的窄渐变底色。 */
+[data-testid="conversation-row-sidebar"] div:has(> [data-testid="conversation-kebab"]) {
+  background: transparent !important;
+}
+
+/* 会话详情预览卡：在 portal 中直接采样背景，保持单层深色磨砂。 */
+[data-base-ui-portal] > [role="presentation"] > .bg-card[data-base-ui-focusable]:has(> div > .line-clamp-3) {
+  background: rgba(var(--ag-surface-rgb), 0.65) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  box-shadow: 0 8px 28px rgb(var(--ag-shadow-rgb) / calc(0.3 * var(--ag-shadow-strength))) !important;
+}
+
+.bg-sidebar [data-active="true"],
+.bg-sidebar [aria-selected="true"],
+[data-testid="conversation-row-sidebar"][data-selected="true"] {
+  background-color: rgba(var(--ag-ink-rgb), 0.16) !important;
+  color: var(--ag-text-strong) !important;
+  font-weight: 520 !important;
+}
+
+/* 9. 【要点 3 解决】当前聊天标题行平滑渐变下拉：消除左侧白线、上边白线与下侧黑线 */
+[class*="cursor-col-resize"],
+[class*="cursor-col-resize"] > div,
+[class*="w-[1px]"][class*="bg-border"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+div.flex-1.flex.flex-col > div.shrink-0:has(> [class*="select-none items-center justify-between"]),
+div.shrink-0[style*="height: 40px"]:has(> [class*="select-none items-center justify-between"]) {
+  background: linear-gradient(to bottom, rgba(var(--ag-surface-rgb), 0.75) 0%, rgba(var(--ag-surface-rgb), 0.50) 100%) !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  margin-left: -4px !important;
+  margin-right: -4px !important;
+  width: calc(100% + 8px) !important;
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 15 !important;
+}
+
+div.flex-1.flex.flex-col > div.shrink-0:has(> [class*="select-none items-center justify-between"])::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 48px !important;
+  background: linear-gradient(to bottom, rgba(var(--ag-surface-rgb), 0.50) 0%, rgba(var(--ag-surface-rgb), 0.18) 50%, transparent 100%) !important;
+  pointer-events: none !important;
+  z-index: 15 !important;
+  border: none !important;
+}
+
+div.shrink-0 [data-testid="breadcrumb-segment"],
+div.shrink-0 [data-testid="breadcrumb-segment"] span,
+div.shrink-0 [data-testid="breadcrumb-segment"] button {
+  color: var(--ag-text-strong) !important;
+  font-weight: 550 !important;
+  text-shadow: var(--ag-text-shadow) !important;
+  filter: none !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* 10. 【要点 4 彻底解决】右侧拆分拉出的新窗口：按左侧边栏同等半透明磨砂处理，左侧投射柔和深邃阴影消除割裂感 */
+/* 各分栏共用轻微回弹曲线，使左侧栏和正文位移同步；保留 visibility 的 step-end。 */
+div[style*="container-type: size"] > div[style*="transition: width"] {
+  --ease-expo-out: var(--ag-pane-ease) !important;
+  transition-duration: var(--ag-pane-duration) !important;
+}
+
+/* 父容器完全透明，杜绝双层叠加变死黑，允许左向阴影平滑投射至聊天区 */
+div:has(> [data-aux-pane-open]),
+.relative.flex-1.flex.min-w-0.h-full.bg-background:has(> [data-aux-pane-open]) {
+  background-color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  z-index: 15 !important;
+  position: relative !important;
+}
+
+/* 副面板开关均由分栏位移带动；收回途中保留完整玻璃和标题栏，不淡出。 */
+[data-aux-pane-open],
+div.h-full.w-full[data-aux-pane-open] {
+  background-color: rgba(var(--ag-sidebar-rgb), 0.65) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-left: 1px solid rgba(var(--ag-ink-rgb), 0.06) !important;
+  box-shadow: -2px 0 8px rgb(var(--ag-shadow-rgb) / calc(0.15 * var(--ag-shadow-strength))) !important;
+  position: relative !important;
+  z-index: 10 !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* 右侧窗口 Tab 栏 */
+[data-aux-pane-open] [data-active-tab-id] {
+  background-color: rgba(var(--ag-surface-rgb), 0.50) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.08) !important;
+}
+
+[data-aux-pane-open] [data-active-tab-id] * {
+  color: var(--ag-text) !important;
+  font-weight: 500 !important;
+}
+
+[data-aux-pane-open] [data-active-tab-id] button[data-state="active"],
+[data-aux-pane-open] [data-active-tab-id] div[data-state="active"] {
+  background: rgba(var(--ag-ink-rgb), 0.12) !important;
+  color: var(--ag-text-strong) !important;
+  font-weight: 550 !important;
+}
+
+/* 右侧文件路径面包屑行 */
+[data-aux-pane-open] .group\/file-row,
+[data-aux-pane-open] div:has(> nav[class*="flex-1 min-w-0"]) {
+  background-color: rgba(var(--ag-surface-rgb), 0.40) !important;
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.06) !important;
+}
+
+[data-aux-pane-open] .group\/file-row button,
+[data-aux-pane-open] .group\/file-row span,
+[data-aux-pane-open] nav button,
+[data-aux-pane-open] nav span {
+  color: var(--ag-text) !important;
+  font-weight: 500 !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+[data-aux-pane-open] .group\/file-row svg,
+[data-aux-pane-open] nav svg {
+  color: rgba(var(--ag-ink-rgb), 0.6) !important;
+}
+
+/* 代码查看器主体：保持高透度与高对比度文字 */
+.file-viewer-root {
+  background-color: transparent !important;
+}
+
+.file-viewer-root span {
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* 右侧 Workspace 文件树浏览器：单一层级，比代码区(0.65)略深，保持通透毛玻璃无硬边缘 */
+[data-aux-pane-open] div.bg-background:has([class*="group/tree"]) {
+  background-color: rgba(var(--ag-surface-rgb), 0.35) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-left: 1px solid rgba(var(--ag-ink-rgb), 0.04) !important;
+  box-shadow: -2px 0 8px rgb(var(--ag-shadow-rgb) / calc(0.15 * var(--ag-shadow-strength))) !important;
+}
+
+/* 内部所有子容器强制完全透明，杜绝多层叠加导致的死黑 */
+[data-aux-pane-open] div.bg-background:has([class*="group/tree"]) div:not([class*="hover"]):not([data-state]):not([class*="cursor-pointer"]) {
+  background-color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-aux-pane-open] [class*="group/tree"] {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .inputarea.ime-input {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.file-viewer-root span {
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* 11. 输出正文完全通透，通过文字色彩与润墨阴影最大化可读性 */
+[role="article"][aria-label="Agent response"],
+[role="article"],
+div[class*="select-text"],
+div.md-divider-spacing {
+  color: var(--ag-text-strong) !important;
+  font-size: 14.5px !important;
+  line-height: 1.8 !important;
+}
+
+[role="article"] p,
+[role="article"] li,
+div[class*="select-text"] p,
+div[class*="select-text"] li,
+div[class*="select-text"] span {
+  color: var(--ag-text-strong) !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+[role="article"] h1, [role="article"] h2, [role="article"] h3, [role="article"] h4,
+div[class*="select-text"] h1, div[class*="select-text"] h2, div[class*="select-text"] h3, div[class*="select-text"] h4 {
+  color: var(--ag-text-strong) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.012em !important;
+  margin-top: 1.3em !important;
+  margin-bottom: 0.6em !important;
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.20) !important;
+  padding-bottom: 0.3em !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+[role="article"] strong,
+div[class*="select-text"] strong,
+div[class*="select-text"] b {
+  color: var(--ag-highlight) !important;
+  font-weight: 600 !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* Markdown 表格：滚动外框承担唯一的深色磨砂，表格本体不再多套一层。 */
+[data-testid="conversation-view"] .select-text div:has(> table) {
+  background: rgba(var(--ag-surface-rgb), 0.50) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  margin: 12px 0 !important;
+  padding: 0 !important;
+  box-shadow: 0 8px 32px rgb(var(--ag-shadow-rgb) / calc(0.25 * var(--ag-shadow-strength))) !important;
+}
+
+[data-testid="conversation-view"] .select-text table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-testid="conversation-view"] .select-text th {
+  background-color: rgba(var(--ag-ink-rgb), 0.06) !important;
+  color: var(--ag-text-strong) !important;
+  font-weight: 600 !important;
+  padding: 11px 16px !important;
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  text-align: left !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+[data-testid="conversation-view"] .select-text td {
+  background: transparent !important;
+  color: var(--ag-text) !important;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid rgba(var(--ag-ink-rgb), 0.08) !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+[data-testid="conversation-view"] .select-text tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* 12. 弹窗、确认框与设置窗口（Modals, Dialogs & Settings Window） */
+
+/* 12.1 统一平滑缩放与遮罩渐变动效 */
+/* 打开动效：直接平滑放大淡入，无任何超调或收缩回弹，即当前 settings window 消失的逆动画 */
+@keyframes agModalDirectScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 关闭动效：遵照当前 settings window 消失的逆动画，平滑缩小下移淡出 */
+@keyframes agModalDirectScaleOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+  }
+}
+
+/* 遮罩层平滑淡入与淡出渐变动效 */
+@keyframes agBackdropFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes agBackdropFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 【A区与通用弹窗遮罩】弹窗背景遮罩层：不要亚克力模糊，仅留一个微微变暗渐变，在动画过程中平滑渐变 */
+.settings-modal-backdrop,
+div.settings-modal-backdrop,
+[data-base-ui-portal] > div.fixed.inset-0,
+[data-radix-portal] > div.fixed.inset-0,
+body > div > div.fixed.inset-0,
+div.fixed.inset-0[class*="bg-black"],
+div:has(> .settings-modal-container).fixed.inset-0,
+div:has(> [role="dialog"]).fixed.inset-0,
+div:has(> [role="alertdialog"]).fixed.inset-0 {
+  background-color: var(--ag-backdrop) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: agBackdropFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* 遮罩层关闭淡出渐变：覆盖所有关闭标记与 class，杜绝关闭瞬间跳变 */
+.settings-modal-backdrop.animate-modalFadeOut,
+.settings-modal-backdrop[data-closed],
+.settings-modal-backdrop[data-ending-style],
+div.fixed.inset-0.animate-modalFadeOut,
+div.fixed.inset-0[data-closed],
+div.fixed.inset-0[data-ending-style],
+div:has(> .settings-modal-container.animate-modalScaleOut).fixed.inset-0,
+div:has(> .settings-modal-container[data-closed]).fixed.inset-0,
+div:has(> .settings-modal-container[data-ending-style]).fixed.inset-0,
+div:has(> [role="dialog"].animate-modalScaleOut).fixed.inset-0,
+div:has(> [role="dialog"][data-closed]).fixed.inset-0,
+div:has(> [role="dialog"][data-ending-style]).fixed.inset-0,
+div:has(> [role="alertdialog"].animate-modalScaleOut).fixed.inset-0,
+div:has(> [role="alertdialog"][data-closed]).fixed.inset-0,
+div:has(> [role="alertdialog"][data-ending-style]).fixed.inset-0 {
+  animation: agBackdropFadeOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+/* 12.2 Settings：独立背板在遮罩合成层外采样，严格贴合面板边界。
+   遮罩的 opacity 动画会截断后代 backdrop-filter；背板由 injector.js 同步位置。
+   遮罩本身的颜色、模糊和动画均保持原样。 */
+#ag-settings-acrylic-plate {
+  position: fixed;
+  pointer-events: none;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
+/* Settings 外框与内部分区只负责着色，整块面板共用一层磨砂。 */
+.settings-modal-container {
+  position: relative !important;
+  background-color: rgba(var(--ag-sidebar-rgb), 0.02) !important;
+  background: rgba(var(--ag-sidebar-rgb), 0.02) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.14) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 80px rgb(var(--ag-shadow-rgb) / calc(0.65 * var(--ag-shadow-strength))), 0 8px 28px rgb(var(--ag-shadow-rgb) / calc(0.35 * var(--ag-shadow-strength))) !important;
+  overflow: hidden !important;
+  animation: agModalDirectScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center !important;
+}
+
+.settings-modal-container::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* 保持右上角关闭按钮绝对定位，修复原本被 > * 设为 relative 导致顶部留白错位的问题 */
+.settings-modal-container > button {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 30 !important;
+  background-color: transparent !important;
+  color: rgba(var(--ag-text-rgb), 0.75) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.settings-modal-container > button:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.10) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* Settings 窗口关闭动效 */
+.settings-modal-container.animate-modalScaleOut,
+.settings-modal-container[data-closed],
+.settings-modal-container[data-ending-style] {
+  animation: agModalDirectScaleOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+/* 彻底消除模态框内层布局包裹容器的多余描边与底色 */
+.settings-modal-container > div,
+.settings-modal-container div.flex-1.overflow-hidden,
+.settings-modal-container div.flex-1.flex.flex-col,
+.settings-modal-container div.overflow-y-auto {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 【B区】Settings 窗口左侧边栏：在统一磨砂背板上着色，与主界面边栏对齐 */
+.settings-modal-container div.bg-sidebar,
+.settings-modal-container aside {
+  background-color: rgba(var(--ag-sidebar-rgb), var(--ag-sidebar-opacity)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-right: 1px solid rgba(var(--ag-ink-rgb), 0.08) !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  box-shadow: 2px 0 8px rgb(var(--ag-shadow-rgb) / calc(0.15 * var(--ag-shadow-strength))) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 【C区】Settings 窗口右侧内容区：比 B区 更浅更通透，共用面板磨砂背板 */
+.settings-modal-container .flex-1.min-h-0.w-full > div > div:nth-child(2),
+.settings-modal-container div.relative.flex.w-full.h-full.outline-none > div:nth-child(2),
+.settings-modal-container #ag-theme-settings-view {
+  background-color: rgba(var(--ag-panel-rgb), 0.42) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* C区内部子包裹层保持透明，防止多层底色叠加变暗 */
+.settings-modal-container div.bg-background,
+.settings-modal-container div.overflow-y-auto:not(#ag-theme-settings-view),
+.settings-modal-container div:has(> div.p-6) {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 12.3 确认弹窗与小对话框（如 Delete Conversation）：遮罩层仅渐变，卡片内容亚克力模糊 */
+/* 模态框父容器：彻底移除 opacity 动画与隔离，允许子卡片采样主背景 */
+div.animate-modalFadeIn:has(> [role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel)),
+div.animate-modalFadeIn:has(> [role="alertdialog"]) {
+  animation: none !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: transparent !important;
+}
+
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel),
+[role="alertdialog"] {
+  position: relative !important;
+  background-color: rgba(var(--ag-surface-rgb), 0.60) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  filter: none !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgb(var(--ag-shadow-rgb) / calc(0.55 * var(--ag-shadow-strength))), 0 4px 16px rgb(var(--ag-shadow-rgb) / calc(0.3 * var(--ag-shadow-strength))) !important;
+  overflow: hidden !important;
+  animation: agModalDirectScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center !important;
+}
+
+/* 确认弹窗与小对话框关闭动效 */
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel).animate-modalScaleOut,
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel)[data-closed],
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel)[data-ending-style],
+[role="alertdialog"].animate-modalScaleOut,
+[role="alertdialog"][data-closed],
+[role="alertdialog"][data-ending-style] {
+  animation: agModalDirectScaleOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel)::before,
+[role="alertdialog"]::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* 清理普通弹窗的嵌套底色；Select / Menu 及其选项有独立表面，不能一并清空。 */
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel) div.overflow-y-auto:not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *),
+[role="alertdialog"] div.overflow-y-auto:not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *),
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel) div.bg-card:not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *),
+[role="alertdialog"] div.bg-card:not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *),
+[role="dialog"]:not(.settings-modal-container):not(.animate-overview-panel) div:not([class*="hover"]):not([data-state]):not([class*="cursor-pointer"]):not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *),
+[role="alertdialog"] div:not([class*="hover"]):not([data-state]):not([class*="cursor-pointer"]):not([data-select-popup], [data-select-popup] *, [role="menu"], [role="menu"] *) {
+  background-color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 弹窗内部输入框、选择器与卡片容器 */
+.settings-modal-container input,
+.settings-modal-container select,
+.settings-modal-container [role="combobox"],
+.settings-modal-container div.rounded-lg.border:not([data-select-popup], [role="menu"]),
+.settings-modal-container div.rounded-md.border:not([data-select-popup], [role="menu"]),
+[role="dialog"] input,
+[role="dialog"] select,
+[role="dialog"] [role="combobox"],
+[role="dialog"] div.rounded-lg.border:not([data-select-popup], [role="menu"]),
+[role="dialog"] div.rounded-md.border:not([data-select-popup], [role="menu"]) {
+  background-color: rgba(var(--ag-ink-rgb), 0.05) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.12) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+.settings-modal-container h1, .settings-modal-container h2, .settings-modal-container h3,
+.settings-modal-container span, .settings-modal-container p, .settings-modal-container label,
+[role="dialog"] h1, [role="dialog"] h2, [role="dialog"] h3,
+[role="dialog"] span, [role="dialog"] p, [role="dialog"] label,
+[role="alertdialog"] h1, [role="alertdialog"] h2, [role="alertdialog"] h3,
+[role="alertdialog"] span, [role="alertdialog"] p, [role="alertdialog"] label {
+  color: var(--ag-text) !important;
+  text-shadow: var(--ag-text-shadow) !important;
+}
+
+/* 13. History / Automations / Customizations 共用列表和控件。
+   原生 Tailwind 使用 --color-*；在页面根重新映射，避免继承已在 :root 解析的旧颜色。 */
+[data-ag-library-page] {
+  --ag-library-surface: rgba(var(--ag-surface-rgb), 0.64);
+  --color-foreground: var(--ag-text-strong);
+  --color-secondary-foreground: var(--ag-text-secondary);
+  --color-muted-foreground: var(--ag-text-muted);
+  --color-placeholder: var(--ag-placeholder);
+  --color-card: var(--ag-library-surface);
+  --color-muted: rgba(var(--ag-ink-rgb), 0.08);
+  --color-secondary: rgba(var(--ag-ink-rgb), 0.10);
+  --color-border: rgba(var(--ag-ink-rgb), 0.16);
+  color: var(--color-foreground) !important;
+  text-shadow: var(--ag-text-shadow);
+}
+
+[data-ag-library-page] :is(h1, h2, h3) {
+  color: var(--ag-text-strong) !important;
+  font-weight: 600 !important;
+}
+
+/* History 的滚动边缘 mask 会截断后代的 backdrop 采样；仅移除该页面的边缘渐隐。 */
+div.overflow-y-auto:has(> [data-ag-library-page="history"]) {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* 信息提示卡使用磨砂；普通列表保持原生排版，不逐项包成卡片。 */
+[data-ag-library-page="history"] > .sticky > .bg-card {
+  background: var(--ag-library-surface) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 20px rgb(var(--ag-shadow-rgb) / calc(0.18 * var(--ag-shadow-strength))) !important;
+  transition: background-color 150ms ease, border-color 150ms ease !important;
+}
+
+[data-ag-library-page] :is([data-testid="conversation-row-history"], [data-testid="sidecar-row"], [data-testid="customization-card"]),
+[data-testid="customizations-installed"] .group.relative.rounded-lg:has(> button.w-full) {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: background-color 150ms ease !important;
+}
+
+[data-ag-library-page] :is([data-testid="conversation-row-history"], [data-testid="sidecar-row"], [data-testid="customization-card"]):is(:hover, :focus-within),
+[data-testid="customizations-installed"] .group.relative.rounded-lg:has(> button.w-full):is(:hover, :focus-within) {
+  background: rgba(var(--ag-ink-rgb), 0.08) !important;
+}
+
+/* 去掉操作按钮背后的原生黑色渐变，按钮本身仍提供提亮反馈。 */
+[data-testid="conversation-row-history"] div:has(> [data-testid="conversation-kebab"]),
+[data-testid="customizations-installed"] .absolute[style*="linear-gradient"] {
+  background: transparent !important;
+}
+
+/* 搜索、筛选、普通按钮以及 dropdown 触发器保持透明；开关保留启用状态色。 */
+[data-ag-library-page] :is(button:not([role="switch"]), a.inline-flex:not(.absolute), [role="combobox"]),
+[data-ag-library-page] div:has(> input[placeholder^="Search"]),
+[data-ag-library-page] [data-testid="plugins-tabs"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.18) !important;
+  color: var(--ag-text-secondary) !important;
+  box-shadow: none !important;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease !important;
+}
+
+[data-ag-library-page] :is(button:not([role="switch"]), a.inline-flex:not(.absolute), [role="combobox"]):not(:disabled):is(:hover, :focus-visible),
+[data-ag-library-page] div:has(> input[placeholder^="Search"]):focus-within {
+  background: rgba(var(--ag-ink-rgb), 0.10) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.30) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* 列表项内的大面积点击层不再叠加一块按钮底色。 */
+[data-testid="customizations-installed"] .group.relative.rounded-lg > button.w-full:is(:hover, :focus-visible) {
+  background: transparent !important;
+}
+
+[data-ag-library-page] :is(input:not([type="hidden"]), textarea) {
+  background: transparent !important;
+  color: var(--ag-text-strong) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.18) !important;
+  text-shadow: var(--ag-text-shadow);
+}
+
+[data-ag-library-page] :is(input, textarea)::placeholder {
+  color: var(--ag-placeholder) !important;
+  opacity: 1 !important;
+}
+
+[data-testid="plugins-tabs"] a[aria-current="page"] {
+  color: var(--ag-text-strong) !important;
+  box-shadow: inset 0 -2px rgba(var(--ag-ink-rgb), 0.45) !important;
+}
+
+/* 14. Select 和菜单使用独立 portal；在真正的浮层外壳补齐玻璃，列表内层透明。 */
+[data-select-popup],
+[data-base-ui-portal] [role="menu"] {
+  --color-foreground: var(--ag-text-strong);
+  --color-secondary-foreground: var(--ag-text-secondary);
+  --color-muted-foreground: var(--ag-text-muted);
+  --color-muted: rgba(var(--ag-ink-rgb), 0.08);
+  --color-secondary: rgba(var(--ag-ink-rgb), 0.10);
+  background: rgba(var(--ag-surface-rgb), 0.86) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(var(--ag-ink-rgb), 0.18) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 36px rgb(var(--ag-shadow-rgb) / calc(0.35 * var(--ag-shadow-strength))) !important;
+  color: var(--ag-text-strong) !important;
+  text-shadow: var(--ag-text-shadow);
+}
+
+[data-select-popup] > [role="listbox"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* AcrylicGravity uses the native settings page's 672px column and grouped rows.
+   These classes are self-contained; injected markup cannot add Tailwind utilities. */
+.settings-modal-container :where(button[data-testid^="settings-nav-item-"], #ag-settings-nav-theme).bg-sidebar-secondary {
+  background: var(--color-sidebar-secondary, var(--sidebar-secondary, rgba(var(--ag-ink-rgb), 0.12))) !important;
+}
+
+.settings-modal-container :where(button[data-testid^="settings-nav-item-"], #ag-settings-nav-theme).hover\:bg-sidebar-muted:hover {
+  background: var(--color-sidebar-muted, var(--sidebar-muted, rgba(var(--ag-ink-rgb), 0.06))) !important;
+}
+
+.settings-modal-container[data-ag-theme-open] button[data-testid^="settings-nav-item-"].bg-sidebar-secondary {
+  background: transparent !important;
+}
+
+#ag-theme-settings-view {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  container-type: inline-size;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#ag-theme-settings-view * { box-sizing: border-box; }
+
+.ag-settings-content {
+  width: 100%;
+  max-width: 672px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.ag-settings-header { margin-bottom: 24px; }
+
+#ag-theme-settings-view h2 {
+  margin: 0 32px 4px 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+#ag-theme-settings-view h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+#ag-theme-settings-view p { margin: 0; }
+
+#ag-theme-settings-view .ag-settings-header p,
+#ag-theme-settings-view .ag-settings-hint,
+#ag-theme-settings-view .ag-settings-status {
+  color: var(--color-muted-foreground, var(--ag-text-muted)) !important;
+  text-shadow: none !important;
+}
+
+.ag-settings-sections { display: flex; flex-direction: column; gap: 32px; }
+
+.ag-settings-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+#ag-theme-settings-view .ag-settings-section-heading h3 { margin-bottom: 0; }
+
+#ag-theme-settings-view #ag-reading-color {
+  width: 36px;
+  height: 28px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#ag-reading-color::-webkit-color-swatch-wrapper { padding: 0; }
+#ag-reading-color::-webkit-color-swatch { border: 0; border-radius: 3px; }
+#ag-reading-color-value { min-width: 70px; font-size: 12px; font-variant-numeric: tabular-nums; }
+
+.ag-settings-group {
+  border: 1px solid var(--color-border, rgba(var(--ag-ink-rgb), 0.12));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ag-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 12px;
+}
+
+.ag-settings-row + .ag-settings-row {
+  border-top: 1px solid var(--color-border, rgba(var(--ag-ink-rgb), 0.12));
+}
+
+.ag-setting-copy { flex: 1; min-width: 0; }
+.ag-setting-copy label { font-weight: 400; }
+.ag-setting-copy p { margin-top: 2px !important; font-size: 12px; line-height: 16px; }
+.ag-settings-actions { display: flex; align-items: center; gap: 8px; }
+
+#ag-theme-settings-view .ag-settings-button,
+#ag-theme-settings-view #ag-position {
+  flex-shrink: 0;
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--color-secondary, rgba(var(--ag-ink-rgb), 0.06)) !important;
+  color: var(--color-foreground, var(--ag-text)) !important;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+#ag-theme-settings-view .ag-settings-button:hover {
+  background: var(--color-muted, rgba(var(--ag-ink-rgb), 0.12)) !important;
+}
+
+#ag-theme-settings-view :is(button, input, select):focus-visible {
+  outline: 2px solid var(--color-ring, var(--ag-accent));
+  outline-offset: 2px;
+}
+
+.ag-wallpaper-fields { padding: 0 12px 12px; }
+
+#ag-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px dashed var(--color-border, rgba(var(--ag-ink-rgb), 0.16));
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+#ag-dropzone:is(:hover, .ag-drag-over) {
+  background: rgba(var(--ag-ink-rgb), 0.05);
+  border-color: var(--color-ring, var(--ag-accent));
+}
+
+.ag-url-row { border-top: 1px solid var(--color-border, rgba(var(--ag-ink-rgb), 0.12)); }
+.ag-url-controls { width: 240px; min-width: 0; }
+
+#ag-theme-settings-view #ag-url-input {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border, rgba(var(--ag-ink-rgb), 0.12));
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+#ag-theme-settings-view #ag-url-input:hover {
+  background-color: rgba(var(--ag-ink-rgb), 0.09) !important;
+  border-color: rgba(var(--ag-ink-rgb), 0.3) !important;
+}
+
+#ag-theme-settings-view #ag-url-input:focus {
+  border-color: var(--color-ring, var(--ag-accent)) !important;
+}
+
+.ag-range-control { display: flex; align-items: center; gap: 12px; width: 240px; }
+
+#ag-theme-settings-view input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  background: transparent !important;
+  accent-color: var(--color-ring, var(--ag-accent));
+  cursor: pointer;
+}
+
+.ag-range-control output { min-width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
+#ag-theme-settings-view #ag-position { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 140px; }
+#ag-theme-settings-view .ag-settings-status { margin-top: 16px; font-size: 12px; line-height: 18px; }
+
+@container (max-width: 560px) {
+  .ag-settings-row { flex-wrap: wrap; gap: 8px; }
+  .ag-setting-copy { flex-basis: 100%; }
+  .ag-range-control, .ag-url-controls { width: 100%; }
+}
+
+:is([data-select-popup], [data-base-ui-portal] [role="menu"]) :is([role="option"], [role^="menuitem"]) {
+  background: transparent !important;
+  color: var(--ag-text-secondary) !important;
+  transition: background-color 150ms ease, color 150ms ease !important;
+}
+
+:is([data-select-popup], [data-base-ui-portal] [role="menu"]) :is([role="option"], [role^="menuitem"]):is(:hover, :focus-visible, [data-highlighted]) {
+  background: rgba(var(--ag-ink-rgb), 0.10) !important;
+  color: var(--ag-text-strong) !important;
+}
+
+/* Shared dropdown feedback applies to native settings controls and the theme tab. */
+.settings-modal-container [role="combobox"] {
+  transition: background-color 150ms ease, box-shadow 150ms ease !important;
+}
+
+.settings-modal-container [role="combobox"]:not(:disabled):is(:hover, [aria-expanded="true"]),
+#ag-theme-settings-view #ag-position:not(:disabled):is(:hover, [aria-expanded="true"]) {
+  background-color: rgba(var(--ag-ink-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(var(--ag-ink-rgb), 0.12) !important;
+}
+
+@keyframes agSelectIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes agSelectOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-3px) scale(0.98); }
+}
+
+[data-select-popup] {
+  animation: agSelectIn 140ms ease-out;
+}
+
+[data-select-popup][data-ending-style] {
+  animation: agSelectOut 100ms ease-in forwards;
+  pointer-events: none;
+}
+
+[data-ag-position-popup] {
+  position: fixed;
+  z-index: 10000;
+  padding: 4px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+[data-ag-position-popup] [role="option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+[data-ag-position-popup] [aria-selected="true"]::after {
+  content: '✓';
+  color: var(--ag-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-select-popup], [data-select-popup][data-ending-style] { animation: none; }
+  .settings-modal-container [role="combobox"] { transition: none !important; }
+}
